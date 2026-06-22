@@ -16,6 +16,10 @@
 
 Create 'Calendars' as sets of data where you want your lap data to go. They appear here as a heatmap of different widths to show how much of your day went to that calendar and as different shades to indicate how much time you spend that day in comparison to other days.
 
+## Timeline
+
+<img src="./assets/Timeline.png" width="900">
+
 ## Gantt charts
 
 <img src="./assets/Gantt.png" width="900">
