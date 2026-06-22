@@ -1,586 +1,739 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Time Tracker — a small, local-first way to see your days</title>
-<meta name="description" content="A desktop time tracker that keeps every record on your machine. No accounts, no cloud, just your days, logged honestly." />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #15171c;
-    --bg-raised: #1b1e24;
-    --line: #2a2e36;
-    --text: #ede9e2;
-    --text-dim: #999ba2;
-    --amber: #c98a3e;
-    --amber-soft: #c98a3e33;
-    --teal: #5b8b89;
-    --teal-soft: #5b8b8933;
-    --mono: 'IBM Plex Mono', monospace;
-    --sans: 'Inter', sans-serif;
-    --radius: 6px;
-  }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Time Tracker — a small, local-first way to see your days</title>
+    <meta
+      name="description"
+      content="A desktop time tracker that keeps every record on your machine. No accounts, no cloud, just your days, logged honestly."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #15171c;
+        --bg-raised: #1b1e24;
+        --line: #2a2e36;
+        --text: #ede9e2;
+        --text-dim: #999ba2;
+        --amber: #c98a3e;
+        --amber-soft: #c98a3e33;
+        --teal: #5b8b89;
+        --teal-soft: #5b8b8933;
+        --mono: "IBM Plex Mono", monospace;
+        --sans: "Inter", sans-serif;
+        --radius: 6px;
+      }
 
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
 
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    line-height: 1.55;
-    -webkit-font-smoothing: antialiased;
-  }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--sans);
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
 
-  a { color: inherit; }
+      a {
+        color: inherit;
+      }
 
-  .wrap {
-    max-width: 980px;
-    margin: 0 auto;
-    padding: 0 24px;
-  }
+      .wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
 
-  /* ---------- NAV ---------- */
-  nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 28px 0;
-  }
-  .brand {
-    font-family: var(--mono);
-    font-weight: 600;
-    font-size: 15px;
-    letter-spacing: 0.02em;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .brand .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 2px;
-    background: var(--amber);
-  }
-  .nav-links {
-    display: flex;
-    gap: 28px;
-    font-size: 14px;
-  }
-  .nav-links a {
-    text-decoration: none;
-    color: var(--text-dim);
-    transition: color 0.15s ease;
-  }
-  .nav-links a:hover, .nav-links a:focus-visible { color: var(--text); }
+      /* ---------- NAV ---------- */
+      nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 28px 0;
+      }
+      .brand {
+        font-family: var(--mono);
+        font-weight: 600;
+        font-size: 15px;
+        letter-spacing: 0.02em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .brand .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 2px;
+        background: var(--amber);
+      }
+      .nav-links {
+        display: flex;
+        gap: 28px;
+        font-size: 14px;
+      }
+      .nav-links a {
+        text-decoration: none;
+        color: var(--text-dim);
+        transition: color 0.15s ease;
+      }
+      .nav-links a:hover,
+      .nav-links a:focus-visible {
+        color: var(--text);
+      }
 
-  /* ---------- HERO ---------- */
-  header.hero {
-    padding: 56px 0 40px;
-  }
+      /* ---------- HERO ---------- */
+      header.hero {
+        padding: 56px 0 40px;
+      }
 
-  .eyebrow {
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--amber);
-    margin: 0 0 18px;
-  }
+      .eyebrow {
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--amber);
+        margin: 0 0 18px;
+      }
 
-  h1 {
-    font-family: var(--mono);
-    font-weight: 600;
-    font-size: clamp(28px, 5vw, 48px);
-    line-height: 1.15;
-    letter-spacing: -0.01em;
-    margin: 0 0 20px;
-    max-width: 19ch;
-  }
+      h1 {
+        font-family: var(--mono);
+        font-weight: 600;
+        font-size: clamp(28px, 5vw, 48px);
+        line-height: 1.15;
+        letter-spacing: -0.01em;
+        margin: 0 0 20px;
+        max-width: 19ch;
+      }
 
-  .lede {
-    font-size: 18px;
-    color: var(--text-dim);
-    max-width: 46ch;
-    margin: 0 0 32px;
-  }
+      .lede {
+        font-size: 18px;
+        color: var(--text-dim);
+        max-width: 46ch;
+        margin: 0 0 32px;
+      }
 
-  .cta-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 56px;
-  }
+      .cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 56px;
+      }
 
-  .btn {
-    font-family: var(--sans);
-    font-weight: 600;
-    font-size: 14.5px;
-    padding: 13px 20px;
-    border-radius: var(--radius);
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    border: 1px solid transparent;
-    transition: transform 0.12s ease, border-color 0.15s ease, background 0.15s ease;
-  }
-  .btn:active { transform: translateY(1px); }
+      .btn {
+        font-family: var(--sans);
+        font-weight: 600;
+        font-size: 14.5px;
+        padding: 13px 20px;
+        border-radius: var(--radius);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        border: 1px solid transparent;
+        transition:
+          transform 0.12s ease,
+          border-color 0.15s ease,
+          background 0.15s ease;
+      }
+      .btn:active {
+        transform: translateY(1px);
+      }
 
-  .btn-primary {
-    background: var(--text);
-    color: var(--bg);
-  }
-  .btn-primary:hover { background: #fff; }
+      .btn-primary {
+        background: var(--text);
+        color: var(--bg);
+      }
+      .btn-primary:hover {
+        background: #fff;
+      }
 
-  .btn-secondary {
-    background: transparent;
-    border-color: var(--line);
-    color: var(--text);
-  }
-  .btn-secondary:hover { border-color: #454b57; }
+      .btn-secondary {
+        background: transparent;
+        border-color: var(--line);
+        color: var(--text);
+      }
+      .btn-secondary:hover {
+        border-color: #454b57;
+      }
 
-  .btn-os {
-    font-size: 11px;
-    color: var(--text-dim);
-    font-family: var(--mono);
-    margin-left: 2px;
-  }
+      .btn-os {
+        font-size: 11px;
+        color: var(--text-dim);
+        font-family: var(--mono);
+        margin-left: 2px;
+      }
 
-  /* ---------- DAY STRIP (signature element) ---------- */
-  .daystrip-frame {
-    background: var(--bg-raised);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 22px 24px 20px;
-    overflow: hidden;
-  }
+      /* ---------- DAY STRIP (signature element) ---------- */
+      .daystrip-frame {
+        background: var(--bg-raised);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 22px 24px 20px;
+        overflow: hidden;
+      }
 
-  .daystrip-label {
-    display: flex;
-    justify-content: space-between;
-    font-family: var(--mono);
-    font-size: 11.5px;
-    color: var(--text-dim);
-    margin-bottom: 14px;
-  }
+      .daystrip-label {
+        display: flex;
+        justify-content: space-between;
+        font-family: var(--mono);
+        font-size: 11.5px;
+        color: var(--text-dim);
+        margin-bottom: 14px;
+      }
 
-  .daystrip {
-    display: flex;
-    height: 34px;
-    border-radius: 5px;
-    overflow: hidden;
-    gap: 2px;
-  }
+      .daystrip {
+        display: flex;
+        height: 34px;
+        border-radius: 5px;
+        overflow: hidden;
+        gap: 2px;
+      }
 
-  .block {
-    height: 100%;
-    transform-origin: left center;
-    transform: scaleX(0);
-    animation: grow 0.7s cubic-bezier(.2,.7,.2,1) forwards;
-    border-radius: 3px;
-    position: relative;
-  }
+      .block {
+        height: 100%;
+        transform-origin: left center;
+        transform: scaleX(0);
+        animation: grow 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+        border-radius: 3px;
+        position: relative;
+      }
 
-  .block .tag {
-    position: absolute;
-    top: -22px;
-    left: 0;
-    font-family: var(--mono);
-    font-size: 10.5px;
-    color: var(--text-dim);
-    white-space: nowrap;
-    opacity: 0;
-    animation: fadein 0.4s ease forwards;
-  }
+      .block .tag {
+        position: absolute;
+        top: -22px;
+        left: 0;
+        font-family: var(--mono);
+        font-size: 10.5px;
+        color: var(--text-dim);
+        white-space: nowrap;
+        opacity: 0;
+        animation: fadein 0.4s ease forwards;
+      }
 
-  @keyframes grow {
-    to { transform: scaleX(1); }
-  }
-  @keyframes fadein {
-    to { opacity: 1; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .block, .block .tag { animation: none; transform: scaleX(1); opacity: 1; }
-  }
-
-  .timescale {
-    display: flex;
-    justify-content: space-between;
-    font-family: var(--mono);
-    font-size: 10.5px;
-    color: #5d6068;
-    margin-top: 10px;
-  }
-
-  /* ---------- SECTIONS ---------- */
-  section {
-    padding: 64px 0;
-    border-top: 1px solid var(--line);
-  }
-
-  .section-eyebrow {
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--teal);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    margin: 0 0 14px;
-  }
-
-  h2 {
-    font-family: var(--mono);
-    font-weight: 600;
-    font-size: clamp(22px, 3.4vw, 30px);
-    margin: 0 0 18px;
-    max-width: 24ch;
-  }
-
-  .section-text {
-    color: var(--text-dim);
-    font-size: 16px;
-    max-width: 56ch;
-    margin: 0 0 36px;
-  }
-
-  /* feature grid */
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1px;
-    background: var(--line);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    overflow: hidden;
-  }
-
-  .feature {
-    background: var(--bg);
-    padding: 28px;
-  }
-
-  .feature .ftitle {
-    font-family: var(--mono);
-    font-size: 15px;
-    font-weight: 600;
-    margin: 0 0 8px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .feature .ftitle .chip {
-    width: 7px;
-    height: 7px;
-    border-radius: 2px;
-    flex-shrink: 0;
-  }
-
-  .feature p {
-    color: var(--text-dim);
-    font-size: 14.5px;
-    margin: 0;
-  }
-
-  @media (max-width: 680px) {
-    .grid { grid-template-columns: 1fr; }
-  }
-
-  /* privacy / local-first callout */
-  .callout {
-    border: 1px solid var(--teal-soft);
-    background: linear-gradient(180deg, #5b8b8910, transparent);
-    border-radius: 10px;
-    padding: 28px 30px;
-    margin-top: 8px;
-  }
-  .callout p { margin: 0; color: var(--text-dim); font-size: 15px; }
-  .callout strong { color: var(--text); font-weight: 600; }
-
-  /* downloads */
-  .download-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-  }
-  @media (max-width: 680px) { .download-grid { grid-template-columns: 1fr; } }
-
-  .dl-card {
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 22px;
-    background: var(--bg-raised);
-  }
-  .dl-os {
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--text-dim);
-    margin-bottom: 12px;
-    display: flex;
-    justify-content: space-between;
-  }
-  .dl-version {
-    color: #5d6068;
-  }
-  .dl-card .btn { width: 100%; justify-content: center; margin-bottom: 8px; }
-  .dl-meta {
-    font-family: var(--mono);
-    font-size: 11.5px;
-    color: #5d6068;
-    text-align: center;
-    margin-top: 4px;
-  }
-
-  .counter-row {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-    margin-top: 22px;
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--text-dim);
-  }
-  .counter-num {
-    color: var(--amber);
-    font-weight: 600;
-    font-size: 15px;
-  }
-
-  /* support */
-  .support-box {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
-    flex-wrap: wrap;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 26px 28px;
-    background: var(--bg-raised);
-  }
-  .support-box p { margin: 0; max-width: 46ch; color: var(--text-dim); font-size: 15px; }
-  .support-box strong { color: var(--text); }
-
-  footer {
-    border-top: 1px solid var(--line);
-    padding: 32px 0 48px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 14px;
-  }
-  footer .fmono {
-    font-family: var(--mono);
-    font-size: 12.5px;
-    color: #5d6068;
-  }
-  footer .flinks { display: flex; gap: 20px; font-size: 13.5px; }
-  footer .flinks a { text-decoration: none; color: var(--text-dim); }
-  footer .flinks a:hover { color: var(--text); }
-
-  :focus-visible {
-    outline: 2px solid var(--amber);
-    outline-offset: 2px;
-  }
-</style>
-</head>
-<body>
-
-<div class="wrap">
-  <nav>
-    <div class="brand"><span class="dot"></span>timetracker</div>
-    <div class="nav-links">
-      <a href="#how-it-works">How it works</a>
-      <a href="#download">Download</a>
-      <a href="#support">Support</a>
-    </div>
-  </nav>
-</div>
-
-<header class="hero">
-  <div class="wrap">
-    <p class="eyebrow">desktop app — windows &amp; linux</p>
-    <h1>Your days, logged honestly — and kept entirely on your machine.</h1>
-    <p class="lede">A small stopwatch-and-notes app that turns into a real record of how your time actually went. No account to make, no server to trust — the database lives next to the app, on your computer.</p>
-    <div class="cta-row">
-      <a class="btn btn-primary" href="#download">Download for your OS</a>
-      <a class="btn btn-secondary" href="#how-it-works">See how it works</a>
-    </div>
-
-    <div class="daystrip-frame">
-      <div class="daystrip-label">
-        <span>TUESDAY, JUN 16</span>
-        <span id="liveClock">—</span>
-      </div>
-      <div class="daystrip" id="daystrip"></div>
-      <div class="timescale">
-        <span>8:00</span><span>11:00</span><span>14:00</span><span>17:00</span><span>20:00</span>
-      </div>
-    </div>
-  </div>
-</header>
-
-<section id="how-it-works">
-  <div class="wrap">
-    <p class="section-eyebrow">how it works</p>
-    <h2>Start a lap. Write a note. Watch the shape of your day appear.</h2>
-    <p class="section-text">Every block above is one real lap from the app — a stretch of time with a note attached. Stack enough of them up and a day, a week, a month starts to show its actual shape instead of the one you assumed it had.</p>
-
-    <div class="grid">
-      <div class="feature">
-        <p class="ftitle"><span class="chip" style="background:var(--amber)"></span>Lap timer</p>
-        <p>Start, stop, and tag what you were doing. Laps stack into a running log with comments and a category for each one.</p>
-      </div>
-      <div class="feature">
-        <p class="ftitle"><span class="chip" style="background:var(--teal)"></span>Timeline view</p>
-        <p>A horizontal chart of your day — each lap rendered as a block sized to its real duration, side by side on a clock.</p>
-      </div>
-      <div class="feature">
-        <p class="ftitle"><span class="chip" style="background:#9b6dd8"></span>Heatmap</p>
-        <p>A calendar-style view of your activity over weeks and months, so the long view is just as visible as the daily one.</p>
-      </div>
-      <div class="feature">
-        <p class="ftitle"><span class="chip" style="background:#5d6068"></span>Journal</p>
-        <p>A running markdown notebook alongside the laps, for the context numbers alone don't capture.</p>
-      </div>
-    </div>
-
-    <div class="callout" style="margin-top:24px;">
-      <p><strong>Local-first by design.</strong> The app writes to a SQLite file on your own disk. There's no account, no sign-in, and nothing leaves your machine unless you explicitly export it.</p>
-    </div>
-  </div>
-</section>
-
-<section id="download">
-  <div class="wrap">
-    <p class="section-eyebrow">download</p>
-    <h2>Get the app</h2>
-    <p class="section-text">Built and tested on both platforms before every release. Updates after install are silent and automatic.</p>
-
-    <div class="download-grid">
-      <div class="dl-card">
-        <div class="dl-os"><span>Windows</span><span class="dl-version" id="winVersion">—</span></div>
-        <a class="btn btn-primary" id="winDownload" href="#">Download .exe</a>
-        <div class="dl-meta">Windows 10/11 · auto-updates after install</div>
-      </div>
-      <div class="dl-card">
-        <div class="dl-os"><span>Linux</span><span class="dl-version" id="linuxVersion">—</span></div>
-        <a class="btn btn-primary" id="debDownload" href="#">Download .deb</a>
-        <div class="dl-meta">Debian / Ubuntu / Mint</div>
-        <a class="btn btn-secondary" id="appimageDownload" href="#" style="margin-top:4px;">Or get the .AppImage</a>
-        <div class="dl-meta">Works on most other distros</div>
-      </div>
-    </div>
-
-    <div class="counter-row">
-      <span class="counter-num" id="downloadCount">—</span>
-      <span>downloads so far, pulled live from GitHub</span>
-    </div>
-  </div>
-</section>
-
-<section id="support">
-  <div class="wrap">
-    <p class="section-eyebrow">support the project</p>
-    <h2>One person builds and maintains this.</h2>
-    <div class="support-box">
-      <p>If the app earns its keep on your machine, a one-time tip helps keep it maintained and the bugs fixed. <strong>No subscription, no pressure.</strong></p>
-      <a class="btn btn-primary" href="https://ko-fi.com/YOUR_KOFI_HANDLE" target="_blank" rel="noopener">Buy a coffee on Ko-fi</a>
-    </div>
-  </div>
-</section>
-
-<div class="wrap">
-  <footer>
-    <span class="fmono">timetracker — built by serverizzo</span>
-    <div class="flinks">
-      <a href="https://github.com/serverizzo/TimeTrackingApp-releases/releases" target="_blank" rel="noopener">All releases</a>
-      <a href="https://github.com/serverizzo/TimeTrackingApp-releases/issues" target="_blank" rel="noopener">Report an issue</a>
-    </div>
-  </footer>
-</div>
-
-<script>
-  // ---- Day strip signature element ----
-  const blocks = [
-    { w: 9,  color: '#c98a3e', tag: 'deep work' },
-    { w: 3,  color: '#3a3e47', tag: 'break' },
-    { w: 14, color: '#5b8b89', tag: 'meetings' },
-    { w: 5,  color: '#3a3e47', tag: 'lunch' },
-    { w: 18, color: '#c98a3e', tag: 'deep work' },
-    { w: 6,  color: '#9b6dd8', tag: 'review' },
-    { w: 8,  color: '#5b8b89', tag: 'admin' },
-  ];
-  const total = blocks.reduce((s, b) => s + b.w, 0);
-  const strip = document.getElementById('daystrip');
-  let delay = 0;
-  blocks.forEach((b) => {
-    const el = document.createElement('div');
-    el.className = 'block';
-    el.style.width = (b.w / total * 100) + '%';
-    el.style.background = b.color;
-    el.style.animationDelay = delay + 's';
-    strip.appendChild(el);
-    delay += 0.05;
-  });
-
-  // ---- Live clock, just a small ambient touch ----
-  function tick() {
-    const now = new Date();
-    const hh = String(now.getHours()).padStart(2, '0');
-    const mm = String(now.getMinutes()).padStart(2, '0');
-    const ss = String(now.getSeconds()).padStart(2, '0');
-    document.getElementById('liveClock').textContent = `${hh}:${mm}:${ss}`;
-  }
-  tick();
-  setInterval(tick, 1000);
-
-  // ---- Pull latest release + download counts from GitHub ----
-  const REPO = 'serverizzo/TimeTrackingApp-releases';
-
-  async function loadRelease() {
-    try {
-      const res = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`);
-      if (!res.ok) throw new Error('release fetch failed');
-      const release = await res.json();
-
-      const version = release.tag_name?.replace(/^v/, '') || '—';
-      document.getElementById('winVersion').textContent = 'v' + version;
-      document.getElementById('linuxVersion').textContent = 'v' + version;
-
-      let totalDownloads = 0;
-      (release.assets || []).forEach((asset) => {
-        totalDownloads += asset.download_count || 0;
-        if (asset.name.endsWith('-setup.exe')) {
-          document.getElementById('winDownload').href = asset.browser_download_url;
+      @keyframes grow {
+        to {
+          transform: scaleX(1);
         }
-        if (asset.name.endsWith('.deb')) {
-          document.getElementById('debDownload').href = asset.browser_download_url;
+      }
+      @keyframes fadein {
+        to {
+          opacity: 1;
         }
-        if (asset.name.endsWith('.AppImage')) {
-          document.getElementById('appimageDownload').href = asset.browser_download_url;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .block,
+        .block .tag {
+          animation: none;
+          transform: scaleX(1);
+          opacity: 1;
         }
+      }
+
+      .timescale {
+        display: flex;
+        justify-content: space-between;
+        font-family: var(--mono);
+        font-size: 10.5px;
+        color: #5d6068;
+        margin-top: 10px;
+      }
+
+      /* ---------- SECTIONS ---------- */
+      section {
+        padding: 64px 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .section-eyebrow {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--teal);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin: 0 0 14px;
+      }
+
+      h2 {
+        font-family: var(--mono);
+        font-weight: 600;
+        font-size: clamp(22px, 3.4vw, 30px);
+        margin: 0 0 18px;
+        max-width: 24ch;
+      }
+
+      .section-text {
+        color: var(--text-dim);
+        font-size: 16px;
+        max-width: 56ch;
+        margin: 0 0 36px;
+      }
+
+      /* feature grid */
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1px;
+        background: var(--line);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .feature {
+        background: var(--bg);
+        padding: 28px;
+      }
+
+      .feature .ftitle {
+        font-family: var(--mono);
+        font-size: 15px;
+        font-weight: 600;
+        margin: 0 0 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .feature .ftitle .chip {
+        width: 7px;
+        height: 7px;
+        border-radius: 2px;
+        flex-shrink: 0;
+      }
+
+      .feature p {
+        color: var(--text-dim);
+        font-size: 14.5px;
+        margin: 0;
+      }
+
+      @media (max-width: 680px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* privacy / local-first callout */
+      .callout {
+        border: 1px solid var(--teal-soft);
+        background: linear-gradient(180deg, #5b8b8910, transparent);
+        border-radius: 10px;
+        padding: 28px 30px;
+        margin-top: 8px;
+      }
+      .callout p {
+        margin: 0;
+        color: var(--text-dim);
+        font-size: 15px;
+      }
+      .callout strong {
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      /* downloads */
+      .download-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+      @media (max-width: 680px) {
+        .download-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .dl-card {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 22px;
+        background: var(--bg-raised);
+      }
+      .dl-os {
+        font-family: var(--mono);
+        font-size: 13px;
+        color: var(--text-dim);
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .dl-version {
+        color: #5d6068;
+      }
+      .dl-card .btn {
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 8px;
+      }
+      .dl-meta {
+        font-family: var(--mono);
+        font-size: 11.5px;
+        color: #5d6068;
+        text-align: center;
+        margin-top: 4px;
+      }
+
+      .counter-row {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        margin-top: 22px;
+        font-family: var(--mono);
+        font-size: 13px;
+        color: var(--text-dim);
+      }
+      .counter-num {
+        color: var(--amber);
+        font-weight: 600;
+        font-size: 15px;
+      }
+
+      /* support */
+      .support-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        flex-wrap: wrap;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 26px 28px;
+        background: var(--bg-raised);
+      }
+      .support-box p {
+        margin: 0;
+        max-width: 46ch;
+        color: var(--text-dim);
+        font-size: 15px;
+      }
+      .support-box strong {
+        color: var(--text);
+      }
+
+      footer {
+        border-top: 1px solid var(--line);
+        padding: 32px 0 48px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 14px;
+      }
+      footer .fmono {
+        font-family: var(--mono);
+        font-size: 12.5px;
+        color: #5d6068;
+      }
+      footer .flinks {
+        display: flex;
+        gap: 20px;
+        font-size: 13.5px;
+      }
+      footer .flinks a {
+        text-decoration: none;
+        color: var(--text-dim);
+      }
+      footer .flinks a:hover {
+        color: var(--text);
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--amber);
+        outline-offset: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <nav>
+        <div class="brand"><span class="dot"></span>timetracker</div>
+        <div class="nav-links">
+          <a href="#how-it-works">How it works</a>
+          <a href="#download">Download</a>
+          <!-- <a href="#support">Support</a> -->
+          <a
+            href="https://github.com/serverizzo/TimeTrackingApp-releases/discussions"
+            >Suggestions and Discussions</a
+          >
+        </div>
+      </nav>
+    </div>
+
+    <header class="hero">
+      <div class="wrap">
+        <p class="eyebrow">desktop app — windows &amp; linux</p>
+        <h1>Track and visualize your progress</h1>
+        <p class="lede">
+          A stopwatch and notes app, powered by Electron and SQLite, to capture
+          and visualize your daily activities.
+        </p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#download">Download for your OS</a>
+          <a class="btn btn-secondary" href="#how-it-works">See how it works</a>
+        </div>
+
+        <div class="daystrip-frame">
+          <div class="daystrip-label">
+            <span>TUESDAY, JUN 16</span>
+            <span id="liveClock">—</span>
+          </div>
+          <div class="daystrip" id="daystrip"></div>
+          <div class="timescale">
+            <span>8:00</span><span>11:00</span><span>14:00</span
+            ><span>17:00</span><span>20:00</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section id="how-it-works">
+      <div class="wrap">
+        <p class="section-eyebrow">how it works</p>
+        <h2>Start a lap. Write a note. Watch the shape of your day appear.</h2>
+        <p class="section-text">
+          Every block above is one real lap from the app — a stretch of time
+          with a note attached. Stack enough of them up and a day, a week, a
+          month starts to show its actual shape instead of the one you assumed
+          it had.
+        </p>
+
+        <div class="grid">
+          <div class="feature">
+            <p class="ftitle">
+              <span class="chip" style="background: var(--amber)"></span>Lap
+              timer
+            </p>
+            <p>
+              Start, stop, and tag what you were doing. Laps stack into a
+              running log with comments and a category for each one.
+            </p>
+          </div>
+          <div class="feature">
+            <p class="ftitle">
+              <span class="chip" style="background: var(--teal)"></span>Timeline
+              view
+            </p>
+            <p>
+              A horizontal chart of your day — each lap rendered as a block
+              sized to its real duration, side by side on a clock.
+            </p>
+          </div>
+          <div class="feature">
+            <p class="ftitle">
+              <span class="chip" style="background: #9b6dd8"></span>Heatmap
+            </p>
+            <p>
+              A calendar-style view of your activity over weeks and months, so
+              the long view is just as visible as the daily one.
+            </p>
+          </div>
+          <div class="feature">
+            <p class="ftitle">
+              <span class="chip" style="background: #5d6068"></span>Journal
+            </p>
+            <p>
+              A running markdown notebook alongside the laps, for the context
+              numbers alone don't capture.
+            </p>
+          </div>
+        </div>
+
+        <div class="callout" style="margin-top: 24px">
+          <p>
+            <strong>Local-first by design.</strong> The app writes to a SQLite
+            file on your own disk. There's no account, no sign-in, and nothing
+            leaves your machine unless you explicitly export it.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="download">
+      <div class="wrap">
+        <p class="section-eyebrow">download</p>
+        <h2>Get the app</h2>
+        <p class="section-text">
+          Built and tested on both platforms before every release. Updates after
+          install are silent and automatic.
+        </p>
+
+        <div class="download-grid">
+          <div class="dl-card">
+            <div class="dl-os">
+              <span>Windows</span
+              ><span class="dl-version" id="winVersion">—</span>
+            </div>
+            <a class="btn btn-primary" id="winDownload" href="#"
+              >Download .exe</a
+            >
+            <div class="dl-meta">
+              Windows 10/11 · auto-updates after install
+            </div>
+          </div>
+          <div class="dl-card">
+            <div class="dl-os">
+              <span>Linux</span
+              ><span class="dl-version" id="linuxVersion">—</span>
+            </div>
+            <a class="btn btn-primary" id="debDownload" href="#"
+              >Download .deb</a
+            >
+            <div class="dl-meta">Debian / Ubuntu / Mint</div>
+            <a
+              class="btn btn-secondary"
+              id="appimageDownload"
+              href="#"
+              style="margin-top: 4px"
+              >Or get the .AppImage</a
+            >
+            <div class="dl-meta">Works on most other distros</div>
+          </div>
+        </div>
+
+        <div class="counter-row">
+          <span class="counter-num" id="downloadCount">—</span>
+          <span>downloads so far, pulled live from GitHub</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- <section id="support">
+      <div class="wrap">
+        <p class="section-eyebrow">support the project</p>
+        <h2>One person builds and maintains this.</h2>
+        <div class="support-box">
+          <p>
+            If the app earns its keep on your machine, a one-time tip helps keep
+            it maintained and the bugs fixed.
+            <strong>No subscription, no pressure.</strong>
+          </p>
+          <a
+            class="btn btn-primary"
+            href="https://ko-fi.com/YOUR_KOFI_HANDLE"
+            target="_blank"
+            rel="noopener"
+            >Buy a coffee on Ko-fi</a
+          >
+        </div>
+      </div>
+    </section> -->
+
+    <div class="wrap">
+      <footer>
+        <span class="fmono">timetracker — built by serverizzo</span>
+        <div class="flinks">
+          <a
+            href="https://github.com/serverizzo/TimeTrackingApp-releases/releases"
+            target="_blank"
+            rel="noopener"
+            >All releases</a
+          >
+          <a
+            href="https://github.com/serverizzo/TimeTrackingApp-releases/issues"
+            target="_blank"
+            rel="noopener"
+            >Report an issue</a
+          >
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      // ---- Day strip signature element ----
+      const blocks = [
+        { w: 9, color: "#c98a3e", tag: "deep work" },
+        { w: 3, color: "#3a3e47", tag: "break" },
+        { w: 14, color: "#5b8b89", tag: "meetings" },
+        { w: 5, color: "#3a3e47", tag: "lunch" },
+        { w: 18, color: "#c98a3e", tag: "deep work" },
+        { w: 6, color: "#9b6dd8", tag: "review" },
+        { w: 8, color: "#5b8b89", tag: "admin" },
+      ];
+      const total = blocks.reduce((s, b) => s + b.w, 0);
+      const strip = document.getElementById("daystrip");
+      let delay = 0;
+      blocks.forEach((b) => {
+        const el = document.createElement("div");
+        el.className = "block";
+        el.style.width = (b.w / total) * 100 + "%";
+        el.style.background = b.color;
+        el.style.animationDelay = delay + "s";
+        strip.appendChild(el);
+        delay += 0.05;
       });
 
-      document.getElementById('downloadCount').textContent = totalDownloads.toLocaleString();
-    } catch (err) {
-      document.getElementById('downloadCount').textContent = '—';
-      document.getElementById('winVersion').textContent = '';
-      document.getElementById('linuxVersion').textContent = '';
-      // Fall back to the releases page if the API call fails (e.g. rate limiting)
-      document.getElementById('winDownload').href = `https://github.com/${REPO}/releases/latest`;
-      document.getElementById('debDownload').href = `https://github.com/${REPO}/releases/latest`;
-      document.getElementById('appimageDownload').href = `https://github.com/${REPO}/releases/latest`;
-    }
-  }
-  loadRelease();
-</script>
+      // ---- Live clock, just a small ambient touch ----
+      function tick() {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        const ss = String(now.getSeconds()).padStart(2, "0");
+        document.getElementById("liveClock").textContent = `${hh}:${mm}:${ss}`;
+      }
+      tick();
+      setInterval(tick, 1000);
 
-</body>
+      // ---- Pull latest release + download counts from GitHub ----
+      const REPO = "serverizzo/TimeTrackingApp-releases";
+
+      async function loadRelease() {
+        try {
+          const res = await fetch(
+            `https://api.github.com/repos/${REPO}/releases/latest`,
+          );
+          if (!res.ok) throw new Error("release fetch failed");
+          const release = await res.json();
+
+          const version = release.tag_name?.replace(/^v/, "") || "—";
+          document.getElementById("winVersion").textContent = "v" + version;
+          document.getElementById("linuxVersion").textContent = "v" + version;
+
+          let totalDownloads = 0;
+          (release.assets || []).forEach((asset) => {
+            totalDownloads += asset.download_count || 0;
+            if (asset.name.endsWith("-setup.exe")) {
+              document.getElementById("winDownload").href =
+                asset.browser_download_url;
+            }
+            if (asset.name.endsWith(".deb")) {
+              document.getElementById("debDownload").href =
+                asset.browser_download_url;
+            }
+            if (asset.name.endsWith(".AppImage")) {
+              document.getElementById("appimageDownload").href =
+                asset.browser_download_url;
+            }
+          });
+
+          document.getElementById("downloadCount").textContent =
+            totalDownloads.toLocaleString();
+        } catch (err) {
+          document.getElementById("downloadCount").textContent = "—";
+          document.getElementById("winVersion").textContent = "";
+          document.getElementById("linuxVersion").textContent = "";
+          // Fall back to the releases page if the API call fails (e.g. rate limiting)
+          document.getElementById("winDownload").href =
+            `https://github.com/${REPO}/releases/latest`;
+          document.getElementById("debDownload").href =
+            `https://github.com/${REPO}/releases/latest`;
+          document.getElementById("appimageDownload").href =
+            `https://github.com/${REPO}/releases/latest`;
+        }
+      }
+      loadRelease();
+    </script>
+  </body>
 </html>
